@@ -112,6 +112,72 @@ const CalendarApp = () => {
     setEventTime((prevTime) => ({ ...prevTime, [name]: value.padStart(2, '0') }))
   }
 
+
+  const renderEmptyDays = (firstDayOfMonth) => {
+    return [...Array(firstDayOfMonth).keys()].map((_, index) => (
+      <span key={`empty-${index}`} />
+    ));
+  };
+  
+  // Helper function to check if it's the current day
+  const isCurrentDay = (day, currentDate, currentMonth, currentYear) => {
+    return day === currentDate.getDate() &&
+           currentMonth === currentDate.getMonth() &&
+           currentYear === currentDate.getFullYear();
+  };
+  
+  // Helper function to generate days in month
+  const renderDaysInMonth = (daysInMonth, currentDate, currentMonth, currentYear, handleDayClick) => {
+    console.log('***daysInMonth', daysInMonth, [...Array(daysInMonth).keys()])
+    return [...Array(daysInMonth).keys()].map(day => {
+      const dayNumber = day + 1; // Adjust day number starting from 1
+      return (
+        <span
+          key={dayNumber}
+          className={isCurrentDay(dayNumber, currentDate, currentMonth, currentYear) ? 'current-day' : ''}
+          onClick={() => handleDayClick(dayNumber)}
+        >
+          {dayNumber}
+        </span>
+      );
+    });
+  };
+  
+  // Render function combining empty days and actual days
+  const renderCalendarDays = (firstDayOfMonth, daysInMonth, currentDate, currentMonth, currentYear, handleDayClick) => {
+    return (
+      <div className="days">
+        {renderEmptyDays(firstDayOfMonth)}
+        {renderDaysInMonth(daysInMonth, currentDate, currentMonth, currentYear, handleDayClick)}
+      </div>
+    );
+  };
+
+  // function renderDays(firstDayOfMonth, daysInMonth, currentDate, currentMonth, currentYear, handleDayClick) {
+  //   return (
+  //     <div className="days">
+  //       {[...Array(firstDayOfMonth).keys()].map((_, index) => (
+  //         <span key={`empty-${index}`} />
+  //       ))}
+  //       {[...Array(daysInMonth).keys()].map((day) => (
+  //         <span
+  //           key={day + 1}
+  //           className={
+  //             day + 1 === currentDate.getDate() &&
+  //             currentMonth === currentDate.getMonth() &&
+  //             currentYear === currentDate.getFullYear()
+  //               ? 'current-day'
+  //               : ''
+  //           }
+  //           onClick={() => handleDayClick(day + 1)}
+  //         >
+  //           {day + 1}
+  //         </span>
+  //       ))}
+  //     </div>
+  //   );
+  // }
+
   return (
     <div className="calendar-app">
       <div className="calendar">
@@ -129,26 +195,7 @@ const CalendarApp = () => {
             <span key={day}>{day}</span>
           ))}
         </div>
-        <div className="days">
-          {[...Array(firstDayOfMonth).keys()].map((_, index) => (
-            <span key={`empty-${index}`} />
-          ))}
-          {[...Array(daysInMonth).keys()].map((day) => (
-            <span
-              key={day + 1}
-              className={
-                day + 1 === currentDate.getDate() &&
-                currentMonth === currentDate.getMonth() &&
-                currentYear === currentDate.getFullYear()
-                  ? 'current-day'
-                  : ''
-              }
-              onClick={() => handleDayClick(day + 1)}
-            >
-              {day + 1}
-            </span>
-          ))}
-        </div>
+        {renderCalendarDays(firstDayOfMonth, daysInMonth, currentDate, currentMonth, currentYear, handleDayClick)}
       </div>
       <div className="events">
         {showEventPopup && (
